@@ -1,0 +1,22 @@
+.logInAlert{
+    width: 50vw;
+    height: 370px;
+    position: fixed;
+    top: 20vh;
+    left: 25vw;
+}
+
+.registerAlert{
+    width: 50vw;
+    height: 530px;
+    position: fixed;
+    top: 15vh;
+    left: 25vw;
+}
+
+.authProviderButtons{
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+    justify-content: space-between;
+}
