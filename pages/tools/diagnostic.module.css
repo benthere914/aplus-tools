@@ -1,0 +1,27 @@
+.keywordButtons{
+    display: flex;
+    flex-wrap: wrap;
+    width: 500px;
+    overflow-y: auto;
+    max-height: 180px;
+}
+
+.searchAlert{
+    width: 520px;
+    position: fixed;
+    top:10vh;
+    left: 1vw;
+}
+
+.resultAlert{
+    width: 520px;
+    position: fixed;
+    top:10vh;
+    right: 1vw;
+}
+
+.submitButton{
+    width: 490px;
+    position: relative;
+    top: 10px;
+}
