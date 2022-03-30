@@ -1,0 +1,11 @@
+.headerItems{
+    width: 95vw;
+    position: relative;
+    left:2vw;
+}
+
+.rowFlexBetween{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

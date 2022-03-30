@@ -1,0 +1,54 @@
+.pageDiv{
+    display: flex;
+    flex-direction: column;
+    /* border: solid black; */
+    align-items: center;
+}
+
+.keywordButtons{
+    display: flex;
+    flex-wrap: wrap;
+    width: 500px;
+    overflow-y: auto;
+    max-height: 180px;
+}
+
+.searchAlert{
+    width: 70vw;
+    /* position: fixed; */
+    top:1vh;
+    /* left: 1vw; */
+}
+
+/* .resultAlert{
+    width: 55vw;
+    position: fixed;
+    top:10vh;
+    right: 1vw;
+    border: solid black;
+    overflow-y: scroll;
+} */
+
+.submitButton{
+    width: 490px;
+    position: relative;
+    top: 10px;
+}
+
+.resultsAlert{
+    height: 70vh;
+    width: 70vw;
+    overflow-y: auto;
+    /* border: solid black; */
+    /* position: fixed; */
+    /* right: 1vw; */
+    /* top: 10vh; */
+}
+
+.tableResult{
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
+    /* overflow: hidden; */
+    word-wrap: break-word;
+    max-width: 12vw;
+}
