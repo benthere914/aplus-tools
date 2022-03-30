@@ -33,9 +33,20 @@ const Header = () => {
                             </>
                         )}
                         </div>
-                        <DropdwonButton align='end' title='Tools'>
-                            <Dropdown.Item onClick={() => {router.push('/tools/diagnostic-lookup')}}>Diagnostic Lookup</Dropdown.Item>
-                        </DropdwonButton>
+                        {userData?.user?.loggedIn 
+                            ? (
+                                <>
+                                <DropdwonButton align='end' title='Tools'>
+                                    <Dropdown.Item onClick={() => {router.push('/tools/diagnostic-lookup')}}>Diagnostic Lookup</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => {router.push('/tools/job-search')}}>Job Search</Dropdown.Item>
+                                </DropdwonButton>
+                                </>
+                            ) 
+                            : (
+                                <>
+                                </>
+                            )}
+                        
                
                     </div>
                     

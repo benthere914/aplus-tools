@@ -11,7 +11,7 @@ const LogOut = () => {
         auth.signOut()
         userData.setUser({})
         router.push('/')
-    }, [])
+    }, [router, userData])
     return (  
         <>
         
