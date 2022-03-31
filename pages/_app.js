@@ -1,5 +1,6 @@
 import { app } from '../utils/firebase'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-calendar/dist/Calendar.css';
 import '../styles/globals.css'
 import Layout from '../comps/layout'
 
