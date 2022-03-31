@@ -9,23 +9,10 @@ import {v4 as uuid} from 'uuid'
 import Calendar from 'react-calendar'
 
 import styles from './index.module.css'
-const dataFields = {
-    "number": "string",
-    "date": "datetime",
-    "customer_name": "string",
-    "parent_customer": "string",
-    "status": "string",
-    "city": "string",
-    "state": "string",
-    "postal_code": "string",
-    "category": "string",
-    "source": "string",
-    "payment_type": "string"
-}
 const job_categories = [
-'New', 
-'Part(s) Needed', 
-'Needs Special Order Part(s)', 
+    'New', 
+    'Part(s) Needed', 
+    'Needs Special Order Part(s)', 
 'Install Equipment', 
 'Call Back', 
 'Stock Part Needed', 
@@ -62,10 +49,10 @@ const job_categories = [
 'Part Factory Back Order' 
 ]
 const job_statuses = [
-'Unscheduled',
-'Scheduled',
-'Dispatched',
-'On The Way',
+    'Unscheduled',
+    'Scheduled',
+    'Dispatched',
+    'On The Way',
 'On Site',
 'Completed',
 'Cancelled',
@@ -92,32 +79,178 @@ const reducer = (state, action) => {
         case 'ADD':
             state.add(action.payload)
             return state
-        case "DELETE":
-            state.delete(action.payload)
-            return state
-        case "RESET":
-            return new Set()
-        default:
-            return state
-        }
-    }
-export const UseFields = createContext()
+            case "DELETE":
+                state.delete(action.payload)
+                return state
+                case "RESET":
+                    return new Set()
+                    default:
+                        return state
+                    }
+                }
+                export const UseFields = createContext()
+const dataFields = {
+    "number": "string",
+    "date": "datetime",
+    "customer_name": "string",
+    "parent_customer": "string",
+    "status": "string",
+    "city": "string",
+    "state": "string",
+    "postal_code": "string",
+    "category": "string",
+    "source": "string",
+    "payment_type": "string"
+}
 const JobSearch = () => {
+    const [numberString, setNumberString] = useState('')
+    const [date, setDate] = useState(new Date())
+    const [customerNameString, setCustomerNameString] = useState('')
+    const [parentCustomerNameString, setParentCustomerNameString] = useState('')
+    const [statusString, setStatusString] = useState('Status')
+    const [cityString, setCityString] = useState('')
+    const [stateString, setStateString] = useState('')
+    const [postalCodeString, setPostalCodeString] = useState('')
+    const [categoryString, setCategoryString] = useState('Category')
+    const [sourceString, setSourceString] = useState('')
+    const [paymentString, setPaymentString] = useState('')
+
+    const [selectedNumberString, setSelectedNumberString] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(false)
+    const [selectedCustomerNameString, setSelectedCustomerNameString] = useState(false)
+    const [selectedParentCustomerNameString, setSelectedParentCustomerNameString] = useState(false)
+    const [selectedStatusString, setSelectedStatusString] = useState(false)
+    const [selectedCityString, setSelectedCityString] = useState(false)
+    const [selectedStateString, setSelectedStateString] = useState(false)
+    const [selectedPostalCodeString, setSelectedPostalCodeString] = useState(false)
+    const [selectedCategoryString, setSelectedCategoryString] = useState(false)
+    const [selectedSourceString, setSelectedSourceString] = useState(false)
+    const [selectedPaymentString, setSelectedPaymentString] = useState(false)
+
+
+    const [exactNumberString, setExactNumberString] = useState(false)
+    const [exactCustomerNameString, setExactCustomerNameString] = useState(false)
+    const [exactParentCustomerNameString, setExactParentCustomerNameString] = useState(false)
+    const [exactStatusString, setExactStatusString] = useState(false)
+    const [exactCityString, setExactCityString] = useState(false)
+    const [exactStateString, setExactStateString] = useState(false)
+    const [exactPostalCodeString, setExactPostalCodeString] = useState(false)
+    const [exactCategoryString, setExactCategoryString] = useState(false)
+    const [exactSourceString, setExactSourceString] = useState(false)
+    const [exactPaymentString, setExactPaymentString] = useState(false)
+
     const [fields, dispatchFields] = useReducer(reducer, initialState)
-    const buttons = {}
-    const states = {}
-    Object.keys(dataFields).forEach((key) => {
-        const [selected, setSelected] = useState(false)
-        const [string, setString] = useState('')
-        const [exact, setExact] = useState(false)
-        const [startDate, setStartDate] = useState(new Date())
-        const [endDate, setEndDate] = useState(new Date())
-        buttons[key] = {key,endDate, setEndDate, startDate, setStartDate, selected, setSelected, exact, setExact, string, setString, "type": dataFields[key]}
-    })
-    Object.keys(dataFields).forEach(key => {
-        let [value, setValue] = useState('')
-        states[key] = {value, setValue}
-    })
+    const buttons = {
+        "number": {
+            "type": "string",
+            "key": "number", 
+            "string": numberString, 
+            "setString": setNumberString, 
+            "exact":exactNumberString, 
+            "setExact": setExactNumberString, 
+            "selected": selectedNumberString, 
+            "setSelected": setSelectedNumberString
+        },
+        "date": {
+            "type": "datetime",
+            "key": "date", 
+            "date": date, 
+            "setDate": setDate,
+            "selected": selectedDate, 
+            "setSelected": setSelectedDate
+        },
+        "customer_name": {
+            "type": "string",
+            "key": "customer_name", 
+            "string": customerNameString, 
+            "setString": setCustomerNameString, 
+            "exact":exactCustomerNameString, 
+            "setExact": setExactCustomerNameString, 
+            "selected": selectedCustomerNameString, 
+            "setSelected": setSelectedCustomerNameString
+        },
+        "parent_customer": {
+            "type": "string",
+            "key": "parent_customer", 
+            "string": parentCustomerNameString, 
+            "setString": setParentCustomerNameString, 
+            "exact":exactParentCustomerNameString, 
+            "setExact": setExactParentCustomerNameString, 
+            "selected": selectedParentCustomerNameString, 
+            "setSelected": setSelectedParentCustomerNameString
+        },
+        "status": {
+            "type": "string",
+            "key": "status", 
+            "string": statusString, 
+            "setString": setStatusString, 
+            "exact":exactStatusString, 
+            "setExact": setExactStatusString, 
+            "selected": selectedStatusString, 
+            "setSelected": setSelectedStatusString
+        },
+        "city": {
+            "type": "string",
+            "key": "city", 
+            "string": cityString, 
+            "setString": setCityString, 
+            "exact":exactCityString, 
+            "setExact": setExactCityString, 
+            "selected": selectedCityString, 
+            "setSelected": setSelectedCityString
+        },
+        "state": {
+            "type": "string",
+            "key": "state", 
+            "string": stateString, 
+            "setString": setStateString, 
+            "exact":exactStateString, 
+            "setExact": setExactStateString, 
+            "selected": selectedStateString, 
+            "setSelected": setSelectedStateString
+        },
+        "postal_code": {
+            "type": "string",
+            "key": "postal_code", 
+            "string": postalCodeString, 
+            "setString": setPostalCodeString, 
+            "exact":exactPostalCodeString, 
+            "setExact": setExactPostalCodeString, 
+            "selected": selectedPostalCodeString, 
+            "setSelected": setSelectedPostalCodeString
+        },
+        "category": {
+            "type": "string",
+            "key": "category", 
+            "string": categoryString, 
+            "setString": setCategoryString, 
+            "exact":exactCategoryString, 
+            "setExact": setExactCategoryString, 
+            "selected": selectedCategoryString, 
+            "setSelected": setSelectedCategoryString
+        },
+        "source": {
+            "type": "string",
+            "key": "source", 
+            "string": sourceString, 
+            "setString": setSourceString, 
+            "exact":exactSourceString, 
+            "setExact": setExactSourceString, 
+            "selected": selectedSourceString, 
+            "setSelected": setSelectedSourceString
+        },
+        "payment_type": {
+            "type": "string",
+            "key": "paymentType", 
+            "string": paymentString, 
+            "setString": setPaymentString, 
+            "exact":exactPaymentString, 
+            "setExact": setExactPaymentString, 
+            "selected": selectedPaymentString, 
+            "setSelected": setSelectedPaymentString
+        },
+    }
+
     const clickHandler = (key) => {
         const type = buttons[key].selected ? 'DELETE' : 'ADD'
         dispatchFields({type, 'payload': key})
@@ -127,7 +260,7 @@ const JobSearch = () => {
     useEffect(() => {
         dispatchFields({type: 'ADD', payload: 'customer_name'})
         buttons.customer_name.setSelected(true)
-    }, [])
+    }, [buttons.customer_name])
 
     return (  
         <>
@@ -149,11 +282,12 @@ const JobSearch = () => {
                         <Alert className={styles.formAlert}>
 
                         {Object.keys(buttons).map((button) => {
+                            // return <p>{buttons[button].type}</p>
                             switch (buttons[button].type) {
                                 case 'string':
                                     switch (buttons[button].key){
                                         case 'category':
-                                            useEffect(() => {buttons.category.setString('Category')}, [])
+                                            // useEffect(() => {buttons.category.setString('Category')}, [])
                                             return buttons.category.selected ? (
                                                 <Form.Group className={styles.dropdowns}>
                                                     <Form.Label>Job category</Form.Label>
@@ -165,7 +299,7 @@ const JobSearch = () => {
                                                 </Form.Group>
                                             ):null
                                         case 'status':
-                                            useEffect(() => {buttons.status.setString('Status')}, [])
+                                            // useEffect(() => {buttons.status.setString('Status')}, [])
                                             return buttons.status.selected ? (
                                                 <Form.Group className={styles.dropdowns}>
                                                     <Form.Label>Job status</Form.Label>
@@ -197,7 +331,7 @@ const JobSearch = () => {
                                         <Form.Group key={'datetime'} className={styles.dates}>
                                             <Form.Label>Date</Form.Label>
                                             <div className={styles.dates}>
-                                                <Calendar onChange={buttons.date.setStartDate} value={buttons.date.startDate} />
+                                                <Calendar onChange={buttons.date.setDate} value={buttons.date.date} />
                                             </div>
                                         </Form.Group>):null
                             }
