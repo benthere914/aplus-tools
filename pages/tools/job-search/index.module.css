@@ -1,0 +1,58 @@
+.dropDown{
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.buttons{
+    width: 200px;
+}
+
+.eachButton{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: space-between; */
+    /* width: 250px; */
+}
+
+.checkboxLabel{
+    /* border: solid black; */
+    margin: 0;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.mainContentParent{
+    display: flex;
+    /* border: solid black; */
+}
+
+.categoriesMenu{
+    height: 400px;
+    overflow-y: auto;
+    /* position: fixed; */
+    /* right: 200px; */
+}
+
+.formAlert{
+    border: solid black;
+    width: 500px;
+    height: 500px;
+    position: fixed;
+    top: 12vh;
+    right: 5vw;
+    overflow-y: auto;
+}
+
+.searchButton{
+    width: 460px;
+    position: relative;
+    top: 15px;
+    margin-bottom: 15px;
+}
+
+.dates{
+    position: fixed;
+    left: 200px;
+    display: flex;
+}

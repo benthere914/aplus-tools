@@ -70,12 +70,12 @@ const DiagnosticLookup = () => {
                 <Alert.Heading><h2>Diagnostic Lookup</h2></Alert.Heading>
                 <Form onSubmit={(e) => {e.preventDefault()}}>
                     <Form.Group>
-                        <Form.Label>Machine</Form.Label>
-                        <Form.Control value={machine} onChange={(e) => {setMachine(e.target.value.toLowerCase())}}/>
+                        <Form.Label>Manufacturer</Form.Label>
+                        <Form.Control value={manufactor} onChange={(e) => {setManufactor(e.target.value.toLowerCase())}}/>
                     </Form.Group>
                     <Form.Group>
-                        <Form.Label>Manufactor</Form.Label>
-                        <Form.Control value={manufactor} onChange={(e) => {setManufactor(e.target.value.toLowerCase())}}/>
+                        <Form.Label>Machine</Form.Label>
+                        <Form.Control value={machine} onChange={(e) => {setMachine(e.target.value.toLowerCase())}}/>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Model Number</Form.Label>
