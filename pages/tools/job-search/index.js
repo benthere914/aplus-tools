@@ -260,7 +260,7 @@ const JobSearch = () => {
     useEffect(() => {
         dispatchFields({type: 'ADD', payload: 'customer_name'})
         buttons.customer_name.setSelected(true)
-    }, [buttons.customer_name])
+    }, [buttons.customer_name.setSelected])
 
     return (  
         <>
