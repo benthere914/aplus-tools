@@ -4,15 +4,17 @@ import Button from 'react-bootstrap/Button'
 import  DropdownButton  from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownMenu from 'react-bootstrap/DropdownMenu'
+import Table from 'react-bootstrap/Table'
 import {createContext, useEffect, useReducer, useState} from 'react'
 import {v4 as uuid} from 'uuid'
 import Calendar from 'react-calendar'
+import axios from 'axios'
 
 import styles from './index.module.css'
 const job_categories = [
-    'New', 
-    'Part(s) Needed', 
-    'Needs Special Order Part(s)', 
+'New', 
+'Part(s) Needed', 
+'Needs Special Order Part(s)', 
 'Install Equipment', 
 'Call Back', 
 'Stock Part Needed', 
@@ -49,10 +51,10 @@ const job_categories = [
 'Part Factory Back Order' 
 ]
 const job_statuses = [
-    'Unscheduled',
-    'Scheduled',
-    'Dispatched',
-    'On The Way',
+'Unscheduled',
+'Scheduled',
+'Dispatched',
+'On The Way',
 'On Site',
 'Completed',
 'Cancelled',
@@ -79,21 +81,20 @@ const reducer = (state, action) => {
         case 'ADD':
             state.add(action.payload)
             return state
-            case "DELETE":
-                state.delete(action.payload)
+        case "DELETE":
+            state.delete(action.payload)
+            return state
+            case "RESET":
+                return new Set()
+            default:
                 return state
-                case "RESET":
-                    return new Set()
-                    default:
-                        return state
-                    }
-                }
-                export const UseFields = createContext()
+    }
+}
+export const UseFields = createContext()
 const dataFields = {
     "number": "string",
     "date": "datetime",
     "customer_name": "string",
-    "parent_customer": "string",
     "status": "string",
     "city": "string",
     "state": "string",
@@ -106,19 +107,17 @@ const JobSearch = () => {
     const [numberString, setNumberString] = useState('')
     const [date, setDate] = useState(new Date())
     const [customerNameString, setCustomerNameString] = useState('')
-    const [parentCustomerNameString, setParentCustomerNameString] = useState('')
-    const [statusString, setStatusString] = useState('Status')
+    const [statusString, setStatusString] = useState('')
     const [cityString, setCityString] = useState('')
     const [stateString, setStateString] = useState('')
     const [postalCodeString, setPostalCodeString] = useState('')
-    const [categoryString, setCategoryString] = useState('Category')
+    const [categoryString, setCategoryString] = useState('')
     const [sourceString, setSourceString] = useState('')
     const [paymentString, setPaymentString] = useState('')
 
     const [selectedNumberString, setSelectedNumberString] = useState(false)
     const [selectedDate, setSelectedDate] = useState(false)
     const [selectedCustomerNameString, setSelectedCustomerNameString] = useState(false)
-    const [selectedParentCustomerNameString, setSelectedParentCustomerNameString] = useState(false)
     const [selectedStatusString, setSelectedStatusString] = useState(false)
     const [selectedCityString, setSelectedCityString] = useState(false)
     const [selectedStateString, setSelectedStateString] = useState(false)
@@ -130,7 +129,6 @@ const JobSearch = () => {
 
     const [exactNumberString, setExactNumberString] = useState(false)
     const [exactCustomerNameString, setExactCustomerNameString] = useState(false)
-    const [exactParentCustomerNameString, setExactParentCustomerNameString] = useState(false)
     const [exactStatusString, setExactStatusString] = useState(false)
     const [exactCityString, setExactCityString] = useState(false)
     const [exactStateString, setExactStateString] = useState(false)
@@ -138,8 +136,10 @@ const JobSearch = () => {
     const [exactCategoryString, setExactCategoryString] = useState(false)
     const [exactSourceString, setExactSourceString] = useState(false)
     const [exactPaymentString, setExactPaymentString] = useState(false)
-
+    const [itemsLoaded, setItemsLoaded] = useState(false)
+    const [loadedItems, setLoadedItems] = useState([])
     const [fields, dispatchFields] = useReducer(reducer, initialState)
+
     const buttons = {
         "number": {
             "type": "string",
@@ -168,16 +168,6 @@ const JobSearch = () => {
             "setExact": setExactCustomerNameString, 
             "selected": selectedCustomerNameString, 
             "setSelected": setSelectedCustomerNameString
-        },
-        "parent_customer": {
-            "type": "string",
-            "key": "parent_customer", 
-            "string": parentCustomerNameString, 
-            "setString": setParentCustomerNameString, 
-            "exact":exactParentCustomerNameString, 
-            "setExact": setExactParentCustomerNameString, 
-            "selected": selectedParentCustomerNameString, 
-            "setSelected": setSelectedParentCustomerNameString
         },
         "status": {
             "type": "string",
@@ -255,6 +245,15 @@ const JobSearch = () => {
         const type = buttons[key].selected ? 'DELETE' : 'ADD'
         dispatchFields({type, 'payload': key})
         buttons[key].setSelected(prev => !prev)
+        if (type === 'DELETE') {
+            buttons[key].setString('')
+            return 
+        }
+        if (key === 'category' || key === 'status') {
+            buttons[key].setString(key)
+        }
+        
+        // buttons[key].setString('')
     }
 
     useEffect(() => {
@@ -262,6 +261,27 @@ const JobSearch = () => {
         buttons.customer_name.setSelected(true)
     }, [buttons.customer_name.setSelected])
 
+    const searchHandler = async () => {
+        const data = {
+            "number": {"key": "number", "string": buttons.number.string, "exact": buttons.number.exact},
+            "date": {"key": "date", "date": buttons.date.date},
+            "customer_name": {"key": "customer_name", "string": buttons.customer_name.string, "exact": buttons.customer_name.exact},
+            "status": {"key": "status", "string": buttons.status.string, "exact": buttons.status.exact},
+            "city": {"key": "city", "string": buttons.city.string, "exact": buttons.city.exact},
+            "state": {"key": "state", "string": buttons.state.string, "exact": buttons.state.exact},
+            "postal_code": {"key": "postal_code", "string": buttons.postal_code.string, "exact": buttons.postal_code.exact},
+            "category": {"key": "category", "string": buttons.category.string, "exact": buttons.category.exact},
+            "source": {"key": "source", "string": buttons.source.string, "exact": buttons.source.exact},
+            "payment_type": {"key": "payment_type", "string": buttons.payment_type.string, "exact": buttons.payment_type.exact}
+        }
+
+        const url = "https://aplus-crm.herokuapp.com/jobs/search"
+        setItemsLoaded(false)
+        const result = await axios.post(url, JSON.stringify(data))
+        setLoadedItems(result?.data?.result)
+        console.log(result)
+        setItemsLoaded(true)
+    }
     return (  
         <>
             <Alert> 
@@ -289,7 +309,7 @@ const JobSearch = () => {
                                         case 'category':
                                             // useEffect(() => {buttons.category.setString('Category')}, [])
                                             return buttons.category.selected ? (
-                                                <Form.Group className={styles.dropdowns}>
+                                                <Form.Group className={styles.dropdowns} key={'job_category'}>
                                                     <Form.Label>Job category</Form.Label>
                                                     <DropdownButton title={buttons.category.string}>
                                                         <DropdownMenu className={styles.categoriesMenu}>
@@ -301,7 +321,7 @@ const JobSearch = () => {
                                         case 'status':
                                             // useEffect(() => {buttons.status.setString('Status')}, [])
                                             return buttons.status.selected ? (
-                                                <Form.Group className={styles.dropdowns}>
+                                                <Form.Group className={styles.dropdowns} key={'job_status'}>
                                                     <Form.Label>Job status</Form.Label>
                                                     <DropdownButton title={buttons.status.string}>
                                                         <DropdownMenu className={styles.categoriesMenu}>
@@ -317,8 +337,8 @@ const JobSearch = () => {
                                                             <Form.Label style={{'display': 'flex', 'alignItems': 'center', 'marginTop': '10px'}}>
                                                                 {button}
                                                                 <div style={{'marginLeft': '10px'}}>
-                                                                    <Form.Check type={'radio'} label={'exact'} name={button} inline checked={!buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
-                                                                    <Form.Check type={'radio'} label={'similar'} name={button} inline checked={buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
+                                                                    <Form.Check type={'radio'} label={'exact'} name={button} inline checked={buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
+                                                                    <Form.Check type={'radio'} label={'similar'} name={button} inline checked={!buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
                                                                 </div>
                                                             </Form.Label>
                                                             <Form.Control value={buttons[button].string} onChange={(e) => {buttons[button].setString(e.target.value)}}/>
@@ -336,11 +356,53 @@ const JobSearch = () => {
                                         </Form.Group>):null
                             }
                         })}
-                        {[...fields].length > 0 ? <Button className={styles.searchButton}>Search</Button>:null}
+                        {[...fields].length > 0 ? <Button onClick={() => {searchHandler()}} className={styles.searchButton}>Search</Button>:null}
                         </Alert>
                     </Form>
                 </div>
             </Alert>
+            {itemsLoaded ? (
+                <>
+{/* result = [{"number": row[0], "priority": row[2], "description": row[3], "completion_notes": row[5], "customer_name": row[11], "status": row[12], "city": row[17], "state": row[18], "postal_code": row[19], "category": row[23], "source": row[24], "payment_type": row[25]} for row in sql_result] */}
+
+                <Table striped bordered hover responsive variant='dark'>
+                    <thead>
+                        <tr>
+                            <th>Job #</th>
+                            <th>Priority</th>
+                            <th>Job Description</th>
+                            <th>Completion Notes</th>
+                            <th>Customer_Name</th>
+                            <th>Status</th>
+                            <th>Address</th>
+                            <th>Category</th>
+                            <th>Source</th>
+                            <th>Payment Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loadedItems?.map((result) => (
+                            <tr key={uuid()}>
+                                <td className={styles.tableResult}>{result?.number}</td>
+                                <td className={styles.tableResult}>{result?.priority}</td>
+                                <td className={styles.tableResult}>{result?.description}</td>
+                                <td className={styles.tableResult}>{result?.completion_notes}</td>
+                                <td className={styles.tableResult}>{result?.customer_name}</td>
+                                <td className={styles.tableResult}>{result?.status}</td>
+                                <td className={styles.tableResult}>{result?.city}, {result?.state} - {result?.postal_code}</td>
+                                <td className={styles.tableResult}>{result?.category}</td>
+                                <td className={styles.tableResult}>{result?.source}</td>
+                                <td className={styles.tableResult}>{result?.payment_type}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+                </>
+            ) : (
+                <>
+                
+                </>
+            )}
         </>
     );
 }
