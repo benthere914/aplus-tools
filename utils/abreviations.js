@@ -192,7 +192,10 @@ export const machines = {
     "s-oven" : "Single Electric Oven",
     "pedestal" : "Pedestal",
     "e-range" : "Electric Range",
-    "g-range" : "Gas Range"
+    "g-range" : "Gas Range",
+    "cooktop": "Gas Cooktop",
+    "gas cooktop": "Gas Cooktop",
+    "electric cooktop": "Electric Cooktop"
 }
 export const manufactors = {
     "amana": "Amana",
