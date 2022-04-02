@@ -8,6 +8,8 @@ import Table from 'react-bootstrap/Table'
 import {createContext, useEffect, useReducer, useState} from 'react'
 import {v4 as uuid} from 'uuid'
 import Calendar from 'react-calendar'
+import Pagination from 'react-bootstrap/Pagination'
+import { CSVLink } from 'react-csv'
 import axios from 'axios'
 
 import styles from './index.module.css'
@@ -136,8 +138,14 @@ const JobSearch = () => {
     const [exactCategoryString, setExactCategoryString] = useState(false)
     const [exactSourceString, setExactSourceString] = useState(false)
     const [exactPaymentString, setExactPaymentString] = useState(false)
+
     const [itemsLoaded, setItemsLoaded] = useState(false)
     const [loadedItems, setLoadedItems] = useState([])
+    const [start, setStart] = useState(0)
+    const [end, setEnd] = useState(50)
+    const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(0)
+    const [pageIndexes, setPageIndexes] = useState([1, 2, 3, 4, 5])
     const [fields, dispatchFields] = useReducer(reducer, initialState)
 
     const buttons = {
@@ -253,7 +261,6 @@ const JobSearch = () => {
             buttons[key].setString(key)
         }
         
-        // buttons[key].setString('')
     }
 
     useEffect(() => {
@@ -268,7 +275,7 @@ const JobSearch = () => {
             "customer_name": {"key": "customer_name", "string": buttons.customer_name.string, "exact": buttons.customer_name.exact},
             "status": {"key": "status", "string": buttons.status.string, "exact": buttons.status.exact},
             "city": {"key": "city", "string": buttons.city.string, "exact": buttons.city.exact},
-            "state": {"key": "state", "string": buttons.state.string, "exact": buttons.state.exact},
+            "state": {"key": "state_prov", "string": buttons.state.string, "exact": buttons.state.exact},
             "postal_code": {"key": "postal_code", "string": buttons.postal_code.string, "exact": buttons.postal_code.exact},
             "category": {"key": "category", "string": buttons.category.string, "exact": buttons.category.exact},
             "source": {"key": "source", "string": buttons.source.string, "exact": buttons.source.exact},
@@ -276,133 +283,162 @@ const JobSearch = () => {
         }
 
         const url = "https://aplus-crm.herokuapp.com/jobs/search"
+        // const url = "http://localhost:5000/jobs/search"
         setItemsLoaded(false)
         const result = await axios.post(url, JSON.stringify(data))
         setLoadedItems(result?.data?.result)
-        console.log(result)
+        console.log(result.data?.result.length)
+        setTotalPages(((result.data?.result.length / 50)).toFixed())
         setItemsLoaded(true)
     }
+    const setSelectedPage = (page) => {
+        if (page < 0) return
+        if (page > totalPages) return
+        setPage(page)
+        if (page <= 3) setPageIndexes([1, 2, 3, 4, 5])
+        else if (page >= totalPages -3) setPageIndexes([totalPages - 4, totalPages - 3, totalPages -2, totalPages - 1, totalPages])
+        else setPageIndexes([page - 2, page - 1, page, page + 1, page + 2])
+        setStart((page * 50) - 50)
+        setEnd(page * 50)
+    }
+    
     return (  
         <>
             <Alert> 
-                <Alert.Heading>Job Search</Alert.Heading>
-                <div className={styles.mainContentParent}>
-                    <div className={styles.buttons}>
-                        {Object.keys(buttons).map(key => (
-                            <div className={styles.eachButton} key={uuid()}>                          
-                            <Button 
-                                variant={buttons[key]?.selected ? 'light': 'dark'} 
-                                onClick={() => {clickHandler(key)}} 
-                                style={{margin: '3px 2px'}}>{key}
-                                </Button>
-                            </div>
-                        ))}
+                {itemsLoaded ? (
+                    <>
+                    <div className={styles.tableHeader}>
+                        <Button className={styles.backButton} onClick={() => {setLoadedItems([]);setItemsLoaded(false)}}>Back</Button>
+                        <div>
+
+                            <p>Total Results - {loadedItems?.length} - page {page} of {totalPages}</p>
+                            <Pagination>
+                                <Pagination.First onClick={() => {setSelectedPage(1)}}/>
+                                <Pagination.Prev onClick={() => {setSelectedPage(page - 1)}}/>
+                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[0])}} active={pageIndexes[0] === page}>{pageIndexes[0]}</Pagination.Item>
+                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[1])}} active={pageIndexes[1] === page}>{pageIndexes[1]}</Pagination.Item>
+                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[2])}} active={pageIndexes[2] === page}>{pageIndexes[2]}</Pagination.Item>
+                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[3])}} active={pageIndexes[3] === page}>{pageIndexes[3]}</Pagination.Item>
+                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[4])}} active={pageIndexes[4] === page}>{pageIndexes[4]}</Pagination.Item>
+                                <Pagination.Next onClick={() => {setSelectedPage(page + 1)}}/>
+                                <Pagination.Last onClick={() => {setSelectedPage(totalPages)}}/>
+                            </Pagination>
+                        </div>
                     </div>
-                    <Form>
-                        <Alert className={styles.formAlert}>
-
-                        {Object.keys(buttons).map((button) => {
-                            // return <p>{buttons[button].type}</p>
-                            switch (buttons[button].type) {
-                                case 'string':
-                                    switch (buttons[button].key){
-                                        case 'category':
-                                            // useEffect(() => {buttons.category.setString('Category')}, [])
-                                            return buttons.category.selected ? (
-                                                <Form.Group className={styles.dropdowns} key={'job_category'}>
-                                                    <Form.Label>Job category</Form.Label>
-                                                    <DropdownButton title={buttons.category.string}>
-                                                        <DropdownMenu className={styles.categoriesMenu}>
-                                                            {job_categories.map((category) => <Dropdown.Item key={uuid()} onClick={() => {buttons.category.setString(category)}}>{category}</Dropdown.Item>)}
-                                                        </DropdownMenu>
-                                                    </DropdownButton>
-                                                </Form.Group>
-                                            ):null
-                                        case 'status':
-                                            // useEffect(() => {buttons.status.setString('Status')}, [])
-                                            return buttons.status.selected ? (
-                                                <Form.Group className={styles.dropdowns} key={'job_status'}>
-                                                    <Form.Label>Job status</Form.Label>
-                                                    <DropdownButton title={buttons.status.string}>
-                                                        <DropdownMenu className={styles.categoriesMenu}>
-                                                            {job_statuses.map((status) => <Dropdown.Item key={uuid()} onClick={() => {buttons.status.setString(status)}}>{status}</Dropdown.Item>)}
-                                                        </DropdownMenu>
-                                                    </DropdownButton>
-                                                </Form.Group>
-                                            ):null
-                                            default:
-                                                return (
-                                                    buttons[button].selected ? (
-                                                        <Form.Group key={button}>
-                                                            <Form.Label style={{'display': 'flex', 'alignItems': 'center', 'marginTop': '10px'}}>
-                                                                {button}
-                                                                <div style={{'marginLeft': '10px'}}>
-                                                                    <Form.Check type={'radio'} label={'exact'} name={button} inline checked={buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
-                                                                    <Form.Check type={'radio'} label={'similar'} name={button} inline checked={!buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
-                                                                </div>
-                                                            </Form.Label>
-                                                            <Form.Control value={buttons[button].string} onChange={(e) => {buttons[button].setString(e.target.value)}}/>
-                                                        </Form.Group>
-                                                    ):null
-                                                )
-                                    }
-                                    case 'datetime':
-                                        return buttons.date.selected ? (
-                                        <Form.Group key={'datetime'} className={styles.dates}>
-                                            <Form.Label>Date</Form.Label>
-                                            <div className={styles.dates}>
-                                                <Calendar onChange={buttons.date.setDate} value={buttons.date.date} />
-                                            </div>
-                                        </Form.Group>):null
-                            }
-                        })}
-                        {[...fields].length > 0 ? <Button onClick={() => {searchHandler()}} className={styles.searchButton}>Search</Button>:null}
-                        </Alert>
-                    </Form>
-                </div>
-            </Alert>
-            {itemsLoaded ? (
-                <>
-{/* result = [{"number": row[0], "priority": row[2], "description": row[3], "completion_notes": row[5], "customer_name": row[11], "status": row[12], "city": row[17], "state": row[18], "postal_code": row[19], "category": row[23], "source": row[24], "payment_type": row[25]} for row in sql_result] */}
-
-                <Table striped bordered hover responsive variant='dark'>
-                    <thead>
-                        <tr>
-                            <th>Job #</th>
-                            <th>Priority</th>
-                            <th>Job Description</th>
-                            <th>Completion Notes</th>
-                            <th>Customer_Name</th>
-                            <th>Status</th>
-                            <th>Address</th>
-                            <th>Category</th>
-                            <th>Source</th>
-                            <th>Payment Type</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loadedItems?.map((result) => (
-                            <tr key={uuid()}>
-                                <td className={styles.tableResult}>{result?.number}</td>
-                                <td className={styles.tableResult}>{result?.priority}</td>
-                                <td className={styles.tableResult}>{result?.description}</td>
-                                <td className={styles.tableResult}>{result?.completion_notes}</td>
-                                <td className={styles.tableResult}>{result?.customer_name}</td>
-                                <td className={styles.tableResult}>{result?.status}</td>
-                                <td className={styles.tableResult}>{result?.city}, {result?.state} - {result?.postal_code}</td>
-                                <td className={styles.tableResult}>{result?.category}</td>
-                                <td className={styles.tableResult}>{result?.source}</td>
-                                <td className={styles.tableResult}>{result?.payment_type}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-                </>
-            ) : (
-                <>
-                
-                </>
-            )}
+                        {/* <CSVLink data={loadedItems}>Download</CSVLink> */}
+                        <div className={styles.tableDiv}>
+                            <Table striped bordered hover responsive variant='dark'>
+                                <thead>
+                                    <tr>
+                                        <th>Job #</th>
+                                        <th>Priority</th>
+                                        <th>Job Description</th>
+                                        <th>Completion Notes</th>
+                                        <th>Date</th>
+                                        <th>Customer_Name</th>
+                                        <th>Status</th>
+                                        <th>Address</th>
+                                        <th>Category</th>
+                                        <th>Source</th>
+                                        <th>Payment Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {loadedItems.slice(start, end)?.map((result) => (
+                                        <tr key={uuid()}>
+                                            <td className={styles.tableResult}>{result?.number}</td>
+                                            <td className={styles.tableResult}>{result?.priority}</td>
+                                            <td className={styles.tableResult}>{result?.description}</td>
+                                            <td className={styles.tableResult}>{result?.completion_notes}</td>
+                                            <td className={styles.tableResult}>{result?.date?.slice(0, 16)}</td>
+                                            <td className={styles.tableResult}>{result?.customer_name}</td>
+                                            <td className={styles.tableResult}>{result?.status}</td>
+                                            <td className={styles.tableResult}>{result?.street ? `${result?.street}, ` : ''} {result?.city}, {result?.state} - {result?.postal_code}</td>
+                                            <td className={styles.tableResult}>{result?.category}</td>
+                                            <td className={styles.tableResult}>{result?.source}</td>
+                                            <td className={styles.tableResult}>{result?.payment_type}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                    <Alert.Heading>Job Search</Alert.Heading>
+                    <div className={styles.mainContentParent}>
+                        <div className={styles.buttons}>
+                            {Object.keys(buttons).map(key => (
+                                <div className={styles.eachButton} key={uuid()}>                          
+                                    <Button 
+                                    variant={buttons[key]?.selected ? 'light': 'dark'} 
+                                    onClick={() => {clickHandler(key)}} 
+                                    style={{margin: '3px 2px'}}>{key}
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                        <Form>
+                            <Alert className={styles.formAlert}>
+                            {Object.keys(buttons).map((button) => {
+                                switch (buttons[button].type) {
+                                    case 'string':
+                                        switch (buttons[button].key){
+                                            case 'category':
+                                                return buttons.category.selected ? (
+                                                    <Form.Group className={styles.dropdowns} key={'job_category'}>
+                                                        <Form.Label>Job category</Form.Label>
+                                                        <DropdownButton title={buttons.category.string}>
+                                                            <DropdownMenu className={styles.categoriesMenu}>
+                                                                {job_categories.map((category) => <Dropdown.Item key={uuid()} onClick={() => {buttons.category.setString(category)}}>{category}</Dropdown.Item>)}
+                                                            </DropdownMenu>
+                                                        </DropdownButton>
+                                                    </Form.Group>
+                                                ):null
+                                            case 'status':
+                                                return buttons.status.selected ? (
+                                                    <Form.Group className={styles.dropdowns} key={'job_status'}>
+                                                        <Form.Label>Job status</Form.Label>
+                                                        <DropdownButton title={buttons.status.string}>
+                                                            <DropdownMenu className={styles.categoriesMenu}>
+                                                                {job_statuses.map((status) => <Dropdown.Item key={uuid()} onClick={() => {buttons.status.setString(status)}}>{status}</Dropdown.Item>)}
+                                                            </DropdownMenu>
+                                                        </DropdownButton>
+                                                    </Form.Group>
+                                                ):null
+                                                default:
+                                                    return (
+                                                        buttons[button].selected ? (
+                                                            <Form.Group key={button}>
+                                                                <Form.Label style={{'display': 'flex', 'alignItems': 'center', 'marginTop': '10px'}}>
+                                                                    {button}
+                                                                    <div style={{'marginLeft': '10px'}}>
+                                                                        <Form.Check type={'radio'} label={'exact'} name={button} inline checked={buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
+                                                                        <Form.Check type={'radio'} label={'similar'} name={button} inline checked={!buttons[button].exact} onChange={() => {buttons[button].setExact(prev => !prev)}}/>
+                                                                    </div>
+                                                                </Form.Label>
+                                                                <Form.Control value={buttons[button].string} onChange={(e) => {buttons[button].setString(e.target.value)}}/>
+                                                            </Form.Group>
+                                                        ):null
+                                                    )
+                                        }
+                                        case 'datetime':
+                                            return buttons.date.selected ? (
+                                            <Form.Group key={'datetime'} className={styles.dates}>
+                                                <Form.Label>Date</Form.Label>
+                                                <div className={styles.dates}>
+                                                    <Calendar onChange={buttons.date.setDate} value={buttons.date.date} />
+                                                </div>
+                                            </Form.Group>):null
+                                }
+                            })}
+                            {[...fields].length > 0 ? <Button onClick={() => {searchHandler()}} className={styles.searchButton}>Search</Button>:null}
+                            </Alert>
+                        </Form>
+                    </div>
+                    </>
+                )}
+                </Alert>
         </>
     );
 }

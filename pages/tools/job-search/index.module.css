@@ -11,12 +11,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* justify-content: space-between; */
-    /* width: 250px; */
 }
 
 .checkboxLabel{
-    /* border: solid black; */
     margin: 0;
     padding: 0;
     margin-left: 10px;
@@ -24,14 +21,11 @@
 
 .mainContentParent{
     display: flex;
-    /* border: solid black; */
 }
 
 .categoriesMenu{
     height: 400px;
     overflow-y: auto;
-    /* position: fixed; */
-    /* right: 200px; */
 }
 
 .formAlert{
@@ -39,7 +33,6 @@
     width: 500px;
     height: 500px;
     position: relative;
-    /* top: 1vh; */
     left: 35vw;
     overflow-y: auto;
 }
@@ -60,4 +53,21 @@
 .tableResult{
     word-wrap: break-word;
     max-width: 12vw;
+}
+
+.tableDiv{
+    height: 75vh;
+    overflow-y: auto;
+}
+
+.tableHeader{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.backButton{
+    position: relative;
+    right: 35vw;
+    bottom: 20px;
 }
