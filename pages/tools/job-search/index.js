@@ -299,7 +299,7 @@ const JobSearch = () => {
         const result = await axios.post(url, JSON.stringify(data))
         setLoadedItems(result?.data?.result)
         console.log(result.data?.result.length)
-        setTotalPages(((result.data?.result.length / 50)).toFixed())
+        setTotalPages(Math.ceil(result.data?.result.length / 50))
         setItemsLoaded(true)
     }
     const setSelectedPage = (page) => {
@@ -323,14 +323,15 @@ const JobSearch = () => {
                         <div>
 
                             <p>Total Results - {loadedItems?.length} - page {page} of {totalPages}</p>
+                            
                             <Pagination>
                                 <Pagination.First onClick={() => {setSelectedPage(1)}}/>
                                 <Pagination.Prev onClick={() => {setSelectedPage(page - 1)}}/>
-                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[0])}} active={pageIndexes[0] === page}>{pageIndexes[0]}</Pagination.Item>
-                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[1])}} active={pageIndexes[1] === page}>{pageIndexes[1]}</Pagination.Item>
-                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[2])}} active={pageIndexes[2] === page}>{pageIndexes[2]}</Pagination.Item>
-                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[3])}} active={pageIndexes[3] === page}>{pageIndexes[3]}</Pagination.Item>
-                                <Pagination.Item onClick={() => {setSelectedPage(pageIndexes[4])}} active={pageIndexes[4] === page}>{pageIndexes[4]}</Pagination.Item>
+                                {totalPages >= 1 ?<Pagination.Item onClick={() => {setSelectedPage(pageIndexes[0])}} active={pageIndexes[0] === page}>{pageIndexes[0]}</Pagination.Item>:null}
+                                {totalPages >= 2 ?<Pagination.Item onClick={() => {setSelectedPage(pageIndexes[1])}} active={pageIndexes[1] === page}>{pageIndexes[1]}</Pagination.Item>:null}
+                                {totalPages >= 3 ?<Pagination.Item onClick={() => {setSelectedPage(pageIndexes[2])}} active={pageIndexes[2] === page}>{pageIndexes[2]}</Pagination.Item>:null}
+                                {totalPages >= 4 ?<Pagination.Item onClick={() => {setSelectedPage(pageIndexes[3])}} active={pageIndexes[3] === page}>{pageIndexes[3]}</Pagination.Item>:null}
+                                {totalPages >= 5 ?<Pagination.Item onClick={() => {setSelectedPage(pageIndexes[4])}} active={pageIndexes[4] === page}>{pageIndexes[4]}</Pagination.Item>:null}
                                 <Pagination.Next onClick={() => {setSelectedPage(page + 1)}}/>
                                 <Pagination.Last onClick={() => {setSelectedPage(totalPages)}}/>
                             </Pagination>
