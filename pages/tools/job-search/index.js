@@ -328,9 +328,8 @@ const JobSearch = () => {
                 data['date']['second_date'] = secondDate
                 break
         }
-        console.log(data['date'])
-        // const url = "https://aplus-crm.herokuapp.com/jobs/search"
-        const url = "http://localhost:5000/jobs/search"
+        const url = "https://aplus-crm.herokuapp.com/jobs/search"
+        // const url = "http://localhost:5000/jobs/search"
         setItemsLoaded(false)
         const result = await axios.post(url, JSON.stringify(data))
         setLoadedItems(result?.data?.result)
