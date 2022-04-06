@@ -108,6 +108,7 @@ const dataFields = {
 const JobSearch = () => {
     const [numberString, setNumberString] = useState('')
     const [date, setDate] = useState(new Date())
+    const [secondDate, setSecondDate] = useState(new Date())
     const [customerNameString, setCustomerNameString] = useState('')
     const [statusString, setStatusString] = useState('')
     const [cityString, setCityString] = useState('')
@@ -147,6 +148,8 @@ const JobSearch = () => {
     const [totalPages, setTotalPages] = useState(0)
     const [pageIndexes, setPageIndexes] = useState([1, 2, 3, 4, 5])
     const [fields, dispatchFields] = useReducer(reducer, initialState)
+
+    const [dateButtonSelected, setDateButtonSelected] = useState(1)
 
     const buttons = {
         "number": {
@@ -271,7 +274,7 @@ const JobSearch = () => {
     const searchHandler = async () => {
         const data = {
             "number": {"key": "number", "string": buttons.number.string, "exact": buttons.number.exact},
-            "date": {"key": "date", "date": buttons.date.date},
+            "date": {"key": "date"},
             "customer_name": {"key": "customer_name", "string": buttons.customer_name.string, "exact": buttons.customer_name.exact},
             "status": {"key": "status", "string": buttons.status.string, "exact": buttons.status.exact},
             "city": {"key": "city", "string": buttons.city.string, "exact": buttons.city.exact},
@@ -281,7 +284,15 @@ const JobSearch = () => {
             "source": {"key": "source", "string": buttons.source.string, "exact": buttons.source.exact},
             "payment_type": {"key": "payment_type", "string": buttons.payment_type.string, "exact": buttons.payment_type.exact}
         }
-
+        switch (dateButtonSelected) {
+            case 1:
+                data['date']['first_date'] = buttons.date.date
+                break
+            case 2:
+                data['date']['first_date'] = buttons.date.date
+                data['date']['second_date'] = secondDate
+                break
+        }
         const url = "https://aplus-crm.herokuapp.com/jobs/search"
         // const url = "http://localhost:5000/jobs/search"
         setItemsLoaded(false)
@@ -426,8 +437,24 @@ const JobSearch = () => {
                                             return buttons.date.selected ? (
                                             <Form.Group key={'datetime'} className={styles.dates}>
                                                 <Form.Label>Date</Form.Label>
+                                                <div className={styles.datetimeButtons}>
+                                                    <Button variant={dateButtonSelected === 1 ? 'light': 'dark'} onClick={() => {setDateButtonSelected(1)}}>Specific Date</Button>
+                                                    <Button variant={dateButtonSelected === 2 ? 'light': 'dark'} onClick={() => {setDateButtonSelected(2)}}>Between Two Dates</Button>
+                                                </div>
                                                 <div className={styles.dates}>
-                                                    <Calendar onChange={buttons.date.setDate} value={buttons.date.date} />
+                                                    {dateButtonSelected === 1 ? (
+                                                        <>
+                                                            <Calendar onChange={buttons.date.setDate} value={buttons.date.date} />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className={styles.multiCalendars}>
+
+                                                            <Calendar className={styles.smallerCalendar} tileClassName={styles.smallerCalendarItem} onChange={buttons.date.setDate} value={buttons.date.date} />
+                                                            <Calendar className={styles.smallerCalendar} tileClassName={styles.smallerCalendarItem} onChange={setSecondDate} value={secondDate} />
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </Form.Group>):null
                                 }

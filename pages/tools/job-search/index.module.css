@@ -33,7 +33,7 @@
     width: 500px;
     height: 500px;
     position: relative;
-    left: 35vw;
+    left: 42vw;
     overflow-y: auto;
 }
 
@@ -46,8 +46,9 @@
 
 .dates{
     position: fixed;
-    left: 200px;
+    left: 250px;
     display: flex;
+    top: 160px;
 }
 
 .tableResult{
@@ -70,4 +71,33 @@
     position: relative;
     right: 35vw;
     bottom: 20px;
+}
+
+.datetimeButtons{
+    position: relative;
+    bottom: 75px;
+    right: 32px;
+    z-index: 20;
+    /* border: solid black; */
+    width: 350px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.smallerCalendar{
+    width: 250px;
+    /* height: 200px; */
+}
+
+.smallerCalendarItem{
+    margin: 2px;
+    padding: 2px;
+}
+.multiCalendars{
+    /* border: solid black; */
+    display: flex;
+    width: 520px;
+    justify-content: space-between;
+    position: relative;
+    right: 40px;
 }
