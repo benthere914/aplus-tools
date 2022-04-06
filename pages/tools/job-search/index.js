@@ -150,7 +150,7 @@ const JobSearch = () => {
     const [pageIndexes, setPageIndexes] = useState([1, 2, 3, 4, 5])
     const [fields, dispatchFields] = useReducer(reducer, initialState)
 
-    const [dateButtonSelected, setDateButtonSelected] = useState(1)
+    const [dateButtonSelected, setDateButtonSelected] = useState(0)
     const itemsPerPageOptions = [5, 10, 25, 50, 100]
     const [itemsPerPage, setItemsPerPage] = useState(50)
 
@@ -259,14 +259,46 @@ const JobSearch = () => {
         const type = buttons[key].selected ? 'DELETE' : 'ADD'
         dispatchFields({type, 'payload': key})
         buttons[key].setSelected(prev => !prev)
-        if (type === 'DELETE') {
-            buttons[key].setString('')
-            return 
+        switch (key) {
+            case 'category':
+                switch (type) {
+                    case 'DELETE': 
+                        setCategoryString('')
+                        break
+                    case 'ADD':
+                        setCategoryString(key)
+                        break
+                }
+                break
+            case 'status':
+                switch (type) {
+                    case 'DELETE': 
+                        setStatusString('')
+                        break
+                    case 'ADD':
+                        setStatusString(key)
+                        break
+                }
+                break
+            case 'date':
+                setDate(new Date())
+                setSecondDate(new Date())
+                switch (type) {
+                    case 'DELETE':
+                        setDateButtonSelected(0)
+                        break
+                    case 'ADD':
+                        setDateButtonSelected(1)
+                        break
+                }
+                break
+
+            default:
+                switch (type) {
+                    case 'DELETE':
+                        buttons[key].setString('')
+                }
         }
-        if (key === 'category' || key === 'status') {
-            buttons[key].setString(key)
-        }
-        
     }
 
     useEffect(() => {
@@ -296,8 +328,9 @@ const JobSearch = () => {
                 data['date']['second_date'] = secondDate
                 break
         }
-        const url = "https://aplus-crm.herokuapp.com/jobs/search"
-        // const url = "http://localhost:5000/jobs/search"
+        console.log(data['date'])
+        // const url = "https://aplus-crm.herokuapp.com/jobs/search"
+        const url = "http://localhost:5000/jobs/search"
         setItemsLoaded(false)
         const result = await axios.post(url, JSON.stringify(data))
         setLoadedItems(result?.data?.result)
@@ -452,6 +485,7 @@ const JobSearch = () => {
                                                     )
                                         }
                                         case 'datetime':
+                                            // useEffect(() => {setDateButtonSelected(1)}, [])
                                             return buttons.date.selected ? (
                                             <Form.Group key={'datetime'} className={styles.dates}>
                                                 <Form.Label>Date</Form.Label>
