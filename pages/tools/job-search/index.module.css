@@ -101,3 +101,10 @@
     position: relative;
     right: 40px;
 }
+
+.itemsPerPageDropdown{
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    z-index: 155;
+}

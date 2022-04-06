@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button'
 import  DropdownButton  from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownMenu from 'react-bootstrap/DropdownMenu'
+import DropdownItem from 'react-bootstrap/DropdownItem'
 import Table from 'react-bootstrap/Table'
 import {createContext, useEffect, useReducer, useState} from 'react'
 import {v4 as uuid} from 'uuid'
@@ -150,6 +151,8 @@ const JobSearch = () => {
     const [fields, dispatchFields] = useReducer(reducer, initialState)
 
     const [dateButtonSelected, setDateButtonSelected] = useState(1)
+    const itemsPerPageOptions = [5, 10, 25, 50, 100]
+    const [itemsPerPage, setItemsPerPage] = useState(50)
 
     const buttons = {
         "number": {
@@ -298,8 +301,7 @@ const JobSearch = () => {
         setItemsLoaded(false)
         const result = await axios.post(url, JSON.stringify(data))
         setLoadedItems(result?.data?.result)
-        console.log(result.data?.result.length)
-        setTotalPages(Math.ceil(result.data?.result.length / 50))
+        setTotalPages(Math.ceil(result.data?.result.length / itemsPerPage))
         setItemsLoaded(true)
     }
     const setSelectedPage = (page) => {
@@ -309,8 +311,18 @@ const JobSearch = () => {
         if (page <= 3) setPageIndexes([1, 2, 3, 4, 5])
         else if (page >= totalPages -3) setPageIndexes([totalPages - 4, totalPages - 3, totalPages -2, totalPages - 1, totalPages])
         else setPageIndexes([page - 2, page - 1, page, page + 1, page + 2])
-        setStart((page * 50) - 50)
-        setEnd(page * 50)
+        setStart((page * itemsPerPage) - itemsPerPage)
+        setEnd(page * itemsPerPage)
+    }
+
+    const changeItemsPerPageFunc = (num) => {
+        setItemsPerPage(num)
+        setTotalPages(Math.ceil(loadedItems.length / num))
+        setPage(1)
+        setStart(0)
+        setEnd(num)
+        setPageIndexes([1,2,3,4,5])
+
     }
     
     return (  
@@ -374,6 +386,11 @@ const JobSearch = () => {
                                 </tbody>
                             </Table>
                         </div>
+                        <DropdownButton title={"Results per page"} className={styles.itemsPerPageDropdown}>
+                    <DropdownMenu>
+                        {itemsPerPageOptions.map((num) => (<DropdownItem key={`itemsPerPage${num}`} onClick={() => {changeItemsPerPageFunc(num)}}>{num}</DropdownItem>))}
+                    </DropdownMenu>
+                </DropdownButton>
                     </>
                 ) : (
                     <>
@@ -467,6 +484,7 @@ const JobSearch = () => {
                     </>
                 )}
                 </Alert>
+                
         </>
     );
 }
