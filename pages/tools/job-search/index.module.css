@@ -11,12 +11,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* justify-content: space-between; */
-    /* width: 250px; */
 }
 
 .checkboxLabel{
-    /* border: solid black; */
     margin: 0;
     padding: 0;
     margin-left: 10px;
@@ -24,23 +21,19 @@
 
 .mainContentParent{
     display: flex;
-    /* border: solid black; */
 }
 
 .categoriesMenu{
     height: 400px;
     overflow-y: auto;
-    /* position: fixed; */
-    /* right: 200px; */
 }
 
 .formAlert{
     border: solid black;
     width: 500px;
     height: 500px;
-    position: fixed;
-    top: 12vh;
-    right: 5vw;
+    position: relative;
+    left: 42vw;
     overflow-y: auto;
 }
 
@@ -53,6 +46,65 @@
 
 .dates{
     position: fixed;
-    left: 200px;
+    left: 250px;
     display: flex;
+    top: 160px;
+}
+
+.tableResult{
+    word-wrap: break-word;
+    max-width: 12vw;
+}
+
+.tableDiv{
+    height: 75vh;
+    overflow-y: auto;
+}
+
+.tableHeader{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.backButton{
+    position: relative;
+    right: 35vw;
+    bottom: 20px;
+}
+
+.datetimeButtons{
+    position: relative;
+    bottom: 75px;
+    right: 32px;
+    z-index: 20;
+    /* border: solid black; */
+    width: 350px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.smallerCalendar{
+    width: 250px;
+    /* height: 200px; */
+}
+
+.smallerCalendarItem{
+    margin: 2px;
+    padding: 2px;
+}
+.multiCalendars{
+    /* border: solid black; */
+    display: flex;
+    width: 520px;
+    justify-content: space-between;
+    position: relative;
+    right: 40px;
+}
+
+.itemsPerPageDropdown{
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    z-index: 155;
 }
