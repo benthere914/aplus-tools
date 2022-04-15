@@ -16,7 +16,7 @@ const DiagnosticLookup = () => {
         setResults([])
         const valueFromMachine = (obj, func) => {
             for (let key in obj){
-                if (machine.split(' ').includes(key)) return obj[key]
+                if (machine.toLowerCase().split(' ').includes(key)) return obj[key]
                 else func(obj, key)
             }
         }
