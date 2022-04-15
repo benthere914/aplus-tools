@@ -1,0 +1,15 @@
+.mainAlert{
+    width: 66vw;
+    height: 85vh;
+    margin-top: 8px;
+    overflow-y: scroll;
+}
+
+.tableResult{
+    word-wrap: break-word;
+    max-width: 12vw;
+}
+
+.yScroll{
+    /* border: solid blue; */
+}

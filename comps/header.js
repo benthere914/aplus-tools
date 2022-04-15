@@ -39,6 +39,7 @@ const Header = () => {
                                 <DropdwonButton align='end' title='Tools'>
                                     <Dropdown.Item onClick={() => {router.push('/tools/diagnostic-lookup')}}>Diagnostic Lookup</Dropdown.Item>
                                     <Dropdown.Item onClick={() => {router.push('/tools/job-search')}}>Job Search</Dropdown.Item>
+                                    <Dropdown.Item onClick={() => {router.push('/tools/dispatch')}}>Dispatch</Dropdown.Item>
                                 </DropdwonButton>
                                 </>
                             ) 

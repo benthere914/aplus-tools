@@ -354,7 +354,6 @@ const JobSearch = () => {
         setStart(0)
         setEnd(num)
         setPageIndexes([1,2,3,4,5])
-
     }
     
     return (  

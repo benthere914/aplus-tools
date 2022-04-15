@@ -1,119 +1,62 @@
-import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
+import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import Table from 'react-bootstrap/Table'
-import { useState, useReducer } from 'react'
-import {v4 as uuid} from 'uuid'
-import axios from 'axios'
+import { useEffect, useState } from "react";
 import styles from './diagnostic.module.css'
-import { manufactors, machines } from '../../../utils/abreviations'
-
-
-const initialState = new Set()
-const reducer = (state, action) => {
-    switch (action.type) {
-        case 'ADD': 
-            state.add(action.payload)
-            return state
-        case 'REMOVE':
-            state.delete(action.payload)
-            return state
-        case 'RESET':
-            return new Set()
-    }
-}
+import axios from 'axios'
+import SearchResults from '../../../comps/tools/searchResults';
+import { manufacturers, machine_types, machine_formats } from '../../../utils/abreviations'
 const DiagnosticLookup = () => {
-    const [nextKeywords, setNextKeywords] = useState('')
-    const [manufactor, setManufactor] = useState('')
     const [machine, setMachine] = useState('')
-    const [model, setModel] = useState('')
+    const [model_number, setModelNumber] = useState('')
+    const [symptoms, setSymptoms] = useState('')
     const [results, setResults] = useState([])
-    const [keywords, dispatchKeywords] = useReducer(reducer, initialState)
-
-    const convert_machine = () => {
-        return machines[machine.toLowerCase()]
-    }
     
-    const convert_manufactor = () => {
-        return manufactors[manufactor.toLowerCase()]
-    }
-
-    const addKeywordHandler = (e) => {
-        if (e.code !== "Enter") return
-        dispatchKeywords({'type': 'ADD', 'payload': nextKeywords})
-        setNextKeywords('')
-    }
-    const removeKeywordHandler = (value) => {
-        dispatchKeywords({'type': 'REMOVE', 'payload': value})
-        setNextKeywords(value)
-    }
-
-    const searchHandler = async () => {
+    const searchFunc = async () => {
         setResults([])
-        const url = "https://aplus-crm.herokuapp.com/repairs/diagnose"
-        const data = JSON.stringify({
-            "manufactor": convert_manufactor(), 
-            "machine_type": convert_machine(), 
-            "symptoms": [...keywords, nextKeywords], 
-            "model_number": model
-        })
-        const response = await axios.post(url, data)
-        setResults(response?.data?.result)
-        console.log(response)
+        const valueFromMachine = (obj, func) => {
+            for (let key in obj){
+                if (machine.split(' ').includes(key)) return obj[key]
+                else func(obj, key)
+            }
+        }
+         
+        const loopThruObj = (obj) => {
+            const output = []
+            for (let key in obj){
+                if (machine.split(' ').includes(key)) output.push(obj[key])
+            } 
+            return output
+        }
+        const manufacturer = valueFromMachine(manufacturers, (obj, key) => {})
+        const machine_type = valueFromMachine(machine_types, (obj, key) => {})
+        const machine_format = loopThruObj(machine_formats)
+        const result = await axios.post("https://aplus-crm.herokuapp.com/repairs/diagnose", JSON.stringify({manufacturer,machine_type, machine_format, model_number, symptoms: symptoms.split(',')}))
+        setResults(result.data?.repairs)
     }
-
     return (  
         <>
-        <div className={styles.pageDiv}>
+        <div className={styles.inLine}>
 
             <Alert className={styles.searchAlert}>
-                <Alert.Heading><h2>Diagnostic Lookup</h2></Alert.Heading>
+                <Alert.Heading>Diagnostic Lookup</Alert.Heading>
                 <Form onSubmit={(e) => {e.preventDefault()}}>
                     <Form.Group>
-                        <Form.Label>Manufacturer</Form.Label>
-                        <Form.Control value={manufactor} onChange={(e) => {setManufactor(e.target.value.toLowerCase())}}/>
-                    </Form.Group>
-                    <Form.Group>
                         <Form.Label>Machine</Form.Label>
-                        <Form.Control value={machine} onChange={(e) => {setMachine(e.target.value.toLowerCase())}}/>
+                        <Form.Control value={machine} onChange={(e) => {setMachine(e.target.value)}}/>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Model Number</Form.Label>
-                        <Form.Control value={model} onChange={(e) => {setModel(e.target.value)}}/>
+                        <Form.Control value={model_number} onChange={(e) => {setModelNumber(e.target.value)}}/>
                     </Form.Group>
                     <Form.Group>
-                        <Form.Label>Keywords</Form.Label>
-                        <Form.Control value={nextKeywords} onChange={(e) => {setNextKeywords(e.target.value.toLowerCase())}} onKeyPress={(e) => {addKeywordHandler(e)}}/>
+                        <Form.Label>Symptoms</Form.Label>
+                        <Form.Control value={symptoms} onChange={(e) => {setSymptoms(e.target.value)}}/>
                     </Form.Group>
                 </Form>
-                <div className={styles.keywordButtons}>
-                    {[...keywords].sort((a,b) => a.length - b.length).map((keyword) => (
-                            <Button key={uuid()} style={{margin: '10px 2px'}} onClick={() => {removeKeywordHandler(keyword)}}>{keyword}</Button>
-                        ))}
-                </div>
-                <Button className={styles.submitButton} onClick={searchHandler}>Submit</Button>
+                <Button type={"button"} onClick={searchFunc}>Search</Button>
             </Alert>
-            <Alert className={styles.resultsAlert}>
-                <Alert.Heading><h2 style={{"textAlign": "center"}}>Diagnostic Results</h2></Alert.Heading>
-                <Table striped bordered hover responsive variant='dark'>
-                    <thead>
-                        <tr>
-                            <th>Job #</th>
-                            <th>Job Description</th>
-                            <th>Completion Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {results?.map((result) => (
-                            <tr key={uuid()}>
-                                <td className={styles.tableResult}>{result?.number}</td>
-                                <td className={styles.tableResult}>{result?.description}</td>
-                                <td className={styles.tableResult}>{result?.completion_notes}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </Alert>
+            <SearchResults data={[results, ["Job #", "Job Description", "Completion Notes"], ["number", "description", "completion_notes"]]}/>
         </div>
         </>
     );

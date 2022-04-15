@@ -14,10 +14,11 @@
 }
 
 .searchAlert{
-    width: 70vw;
+    width: 33vw;
     /* position: fixed; */
     top:1vh;
     /* left: 1vw; */
+    height: 350px;
 }
 
 /* .resultAlert{
@@ -51,4 +52,11 @@
     /* overflow: hidden; */
     word-wrap: break-word;
     max-width: 12vw;
+}
+
+.inLine{
+    display: flex;
+    flex-direction: row;
+    /* align-items: center; */
+    justify-content: space-between;
 }
